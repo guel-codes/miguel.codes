@@ -19,9 +19,9 @@
   --text-high: #f5f7f8;
   --text-main: rgba(232, 236, 239, 0.84);
   --text-soft: rgba(232, 236, 239, 0.6);
-  --accent: #7af2cc;
+  --accent: #00c94f;
   --border: rgba(255, 255, 255, 0.09);
-  --border-strong: rgba(122, 242, 204, 0.32);
+  --border-strong: rgba(0, 201, 79, 0.34);
   --panel: rgba(8, 11, 16, 0.72);
   --shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.35);
 }
@@ -42,7 +42,7 @@ body {
   background:
     linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    radial-gradient(circle at top, rgba(122, 242, 204, 0.1), transparent 30%),
+    radial-gradient(circle at top, rgba(0, 201, 79, 0.12), transparent 30%),
     linear-gradient(180deg, #070b10 0%, #0d1218 100%);
   background-size:
     120px 120px,

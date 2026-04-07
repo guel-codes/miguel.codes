@@ -45,7 +45,7 @@ const loadSiteContent = async (): Promise<SiteContent> => {
   return {
     name: 'Miguel Johnson',
     role: 'Data Engineer',
-    title: 'Building data platforms for sentiment analysis, campaign measurement, and revenue-facing analytics.',
+    title: 'Building data platforms, writing technical content, and exploring machine learning and AI.',
     location: '',
     intro:
       'I’m currently building real-time data platforms that ingest high-volume live signals, support brand and campaign measurement, and help teams make better decisions from messy data.',
@@ -156,7 +156,11 @@ function App() {
       <section className="hero-panel">
         <header className="topbar">
           <a className="brand" href="#top">
-            {data.name}
+            <img
+              className="brand-logo"
+              src="/miguel-codes-logo.png"
+              alt="miguel.codes"
+            />
           </a>
           <nav className="nav">
             <a href="#work">Work</a>
