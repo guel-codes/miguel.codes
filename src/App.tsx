@@ -45,7 +45,7 @@ const loadSiteContent = async (): Promise<SiteContent> => {
   return {
     name: 'Miguel Johnson',
     role: 'Data Engineer',
-    title: 'Building data platforms, writing technical content, and exploring machine learning and AI.',
+    title: 'Building data platforms, teaching others how to build, and exploring machine learning and AI.',
     location: '',
     intro:
       'I’m currently building real-time data platforms that ingest high-volume live signals, support brand and campaign measurement, and help teams make better decisions from messy data.',
@@ -55,7 +55,8 @@ const loadSiteContent = async (): Promise<SiteContent> => {
       'Open to software engineering opportunities, product-minded teams, and high-trust environments where I can build, iterate, and grow fast.',
     focusAreas: [
       'Building sentiment analysis platforms',
-      'Pipeline efficiency and platform reliability',
+      'Mutual Aid and Community Support Tooling',
+      'Data Pipeline efficiency reliability',
       'Teaching and mentoring newcomers to the field',
       'Machine Learning and AI Research'
     ],
@@ -117,13 +118,18 @@ const loadSiteContent = async (): Promise<SiteContent> => {
         note: '',
       },
       {
-        label: 'PyOhio 2024 Talk',
-        href: 'https://www.pyohio.org/2024/program/talks/stress-less-easy-database-load-testing-using-python-and-locust/',
+        label: 'django-taggit',
+        href: 'https://github.com/jazzband/django-taggit',
         note: '',
       },
       {
-        label: 'django-taggit',
-        href: 'https://github.com/jazzband/django-taggit',
+        label: 'locust.io',
+        href: 'https://github.com/locustio/locust',
+        note: '',
+      },
+      {
+        label: 'PyOhio 2024 Talk',
+        href: 'https://www.pyohio.org/2024/program/talks/stress-less-easy-database-load-testing-using-python-and-locust/',
         note: '',
       },
     ],
@@ -282,8 +288,8 @@ function App() {
 
       <section className="section split-section" id="writing">
         <article className="panel">
-          <span className="eyebrow">Writing + Talks</span>
-          <h2>I like sharing what I learn while I build.</h2>
+          <span className="eyebrow">Open Source + Community</span>
+          <h2>Open source projects and community contributions.</h2>
           <div className="stack-list">
             {data.writingAndTalks.map((item) => (
               <a
