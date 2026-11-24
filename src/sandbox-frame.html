@@ -1,0 +1,80 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; worker-src blob:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<script>
+  function formatValue(value) {
+    if (typeof value === 'string') return value.slice(0, 2000)
+    try {
+      return (JSON.stringify(value, (_, item) => typeof item === 'bigint' ? String(item) + 'n' : item) ?? String(value)).slice(0, 2000)
+    } catch {
+      return Object.prototype.toString.call(value)
+    }
+  }
+
+  function workerSource(code) {
+    return `
+      'use strict';
+      const send = self.postMessage.bind(self);
+      const format = ${formatValue.toString()};
+      let lines = 0;
+      for (const level of ['log', 'info', 'debug', 'warn', 'error']) {
+        console[level] = (...values) => {
+          if (lines++ < 100) {
+            send({ type: 'output', text: (level === 'warn' || level === 'error' ? level + ': ' : '') +
+              values.slice(0, 10).map(format).join(' ').slice(0, 2000) });
+          }
+        };
+      }
+      (async () => {
+        ${code}
+      })().then(
+        () => send({ type: 'done' }),
+        (error) => send({ type: 'failed', text: String(error).slice(0, 2000) })
+      );
+    `
+  }
+
+  window.addEventListener('message', function start(event) {
+    if (event.source !== parent || typeof event.data !== 'string' || event.ports.length !== 1) return
+    window.removeEventListener('message', start)
+
+    const port = event.ports[0]
+    const url = URL.createObjectURL(new Blob([workerSource(event.data)], { type: 'text/javascript' }))
+    let worker
+
+    function finish(message) {
+      worker?.terminate()
+      URL.revokeObjectURL(url)
+      port.postMessage(message)
+      port.close()
+    }
+
+    try {
+      worker = new Worker(url)
+    } catch (error) {
+      finish({ type: 'failed', text: String(error).slice(0, 2000) })
+      return
+    }
+
+    let lines = 0
+    worker.onmessage = ({ data }) => {
+      if (data?.type === 'output' && typeof data.text === 'string' && lines++ < 100) {
+        port.postMessage({ type: 'output', text: data.text.slice(0, 2000) })
+      } else if (data?.type === 'done') {
+        finish({ type: 'done' })
+      } else if (data?.type === 'failed' && typeof data.text === 'string') {
+        finish({ type: 'failed', text: data.text.slice(0, 2000) })
+      } else if (lines > 100) {
+        finish({ type: 'failed', text: 'Output limit reached.' })
+      }
+    }
+    worker.onerror = (error) => {
+      finish({ type: 'failed', text: error.message || 'The snippet could not run.' })
+    }
+    port.onmessage = () => {
+      worker.terminate()
+      URL.revokeObjectURL(url)
+      port.close()
+    }
+  })
+</script>

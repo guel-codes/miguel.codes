@@ -1,0 +1,67 @@
+.sandbox #sandbox-help { margin-top: 16px; }
+
+.sandbox-editor,
+.sandbox-output {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--panel);
+}
+
+.sandbox-editor { margin-top: 24px; }
+
+.sandbox-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 42px;
+  gap: 12px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--raised);
+  color: var(--bright);
+  font: 700 .78rem var(--mono);
+}
+
+.sandbox-toolbar h2 { color: inherit; font: inherit; }
+
+.sandbox-reset {
+  min-height: 30px;
+  padding: 3px 6px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.sandbox-reset:hover:not(:disabled) { color: var(--accent); }
+
+.sandbox textarea,
+.sandbox pre {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 14px;
+  border: 0;
+  background: #101411;
+  color: var(--text);
+  font: .875rem/1.6 var(--mono);
+  tab-size: 2;
+}
+
+.sandbox textarea { min-height: 224px; overflow: auto; resize: vertical; white-space: pre; }
+.sandbox pre { min-height: 90px; max-height: 280px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.sandbox-actions { display: flex; gap: 8px; margin-block: 12px 20px; }
+.sandbox-actions button { cursor: pointer; }
+.sandbox-actions .primary-action { border: 1px solid transparent; }
+.sandbox-actions .secondary-action { background: var(--panel); }
+.sandbox button:disabled { opacity: .55; cursor: default; }
+
+.sandbox-status { color: var(--muted); }
+.sandbox-status[data-status='Finished'] { color: var(--accent); }
+.sandbox-status[data-status='Error'], .sandbox-status[data-status='Stopped'] { color: var(--lab); }
+
+@media (max-width: 660px) {
+  .sandbox textarea { font-size: 1rem; }
+}

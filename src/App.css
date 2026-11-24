@@ -91,6 +91,7 @@
 
 .icon-lab { color: var(--lab); font-size: .95rem; }
 .icon-pdf { color: #f1a99e; font-size: .6rem; }
+.icon-ts { color: #9dc5f3; }
 
 .editor { min-width: 0; min-height: 0; display: grid; grid-template-rows: 47px 39px minmax(0, 1fr); }
 .tab-strip {

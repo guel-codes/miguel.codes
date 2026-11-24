@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { experience, files, openSource, printerProject, resume, socialLinks, writing } from './portfolio'
 import type { FileId } from './portfolio'
 import PrinterProject from './PrinterProject'
+import Sandbox from './Sandbox'
 import './App.css'
 
 const legacyHashes: Record<string, FileId> = {
@@ -11,15 +12,15 @@ const legacyHashes: Record<string, FileId> = {
   '#work': 'writing',
 }
 
-const allFileIds = files.map(({ id }) => id)
+const defaultOpenFileIds: FileId[] = files.map(({ id }) => id).filter((id) => id !== 'sandbox')
 
 function readHash(): FileId {
   const hash = window.location.hash
   return files.find(({ id }) => hash === `#${id}`)?.id ?? legacyHashes[hash] ?? 'readme'
 }
 
-function FileIcon({ type }: { type: 'md' | 'lab' | 'pdf' }) {
-  return <span aria-hidden="true" className={`file-icon icon-${type}`}>{ { md: 'M↓', lab: 'µ', pdf: 'PDF' }[type] }</span>
+function FileIcon({ type }: { type: (typeof files)[number]['type'] | 'pdf' }) {
+  return <span aria-hidden="true" className={`file-icon icon-${type}`}>{ { md: 'M↓', lab: 'µ', ts: 'TS', pdf: 'PDF' }[type] }</span>
 }
 
 function ExternalLink({ href, children }: { href: string; children: ReactNode }) {
@@ -165,13 +166,25 @@ const documents: Record<FileId, ReactNode> = {
       <PrinterProject />
     </>
   ),
+  sandbox: (
+    <>
+      <Heading level={1}>TypeScript sandbox</Heading>
+      <Sandbox />
+    </>
+  ),
 }
 
 function App() {
   const [{ activeFile, openFiles }, setWorkspace] = useState<{
     activeFile: FileId | null
     openFiles: FileId[]
-  }>(() => ({ activeFile: readHash(), openFiles: allFileIds }))
+  }>(() => {
+    const activeFile = readHash()
+    const openFiles = defaultOpenFileIds.includes(activeFile)
+      ? defaultOpenFileIds
+      : [...defaultOpenFileIds, activeFile]
+    return { activeFile, openFiles }
+  })
   const [explorerOpen, setExplorerOpen] = useState(false)
   const editorRef = useRef<HTMLElement>(null)
   const activeTabRef = useRef<HTMLDivElement>(null)

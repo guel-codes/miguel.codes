@@ -6,6 +6,7 @@ export const files = [
   { id: 'open-source', name: 'open-source.md', type: 'md' },
   { id: 'electronics', name: 'electronics.md', type: 'lab' },
   { id: 'printer-exhaust', name: 'printer-exhaust.md', type: 'lab' },
+  { id: 'sandbox', name: 'sandbox.ts', type: 'ts' },
 ] as const
 
 export type FileId = (typeof files)[number]['id']
