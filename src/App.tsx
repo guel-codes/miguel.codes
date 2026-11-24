@@ -1,327 +1,290 @@
-import { useQuery } from '@tanstack/react-query'
+import { useEffect, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
+import { experience, files, openSource, printerProject, resume, socialLinks, writing } from './portfolio'
+import type { FileId } from './portfolio'
+import PrinterProject from './PrinterProject'
 import './App.css'
 
-type LinkItem = {
-  label: string
-  href: string
+const legacyHashes: Record<string, FileId> = {
+  '#top': 'readme',
+  '#about': 'readme',
+  '#work': 'writing',
 }
 
-type ProjectItem = {
-  title: string
-  summary: string
-  tags: string[]
-  href: string
+const allFileIds = files.map(({ id }) => id)
+
+function readHash(): FileId {
+  const hash = window.location.hash
+  return files.find(({ id }) => hash === `#${id}`)?.id ?? legacyHashes[hash] ?? 'readme'
 }
 
-type Highlight = {
-  label: string
-  value: string
+function FileIcon({ type }: { type: 'md' | 'lab' | 'pdf' }) {
+  return <span aria-hidden="true" className={`file-icon icon-${type}`}>{ { md: 'M↓', lab: 'µ', pdf: 'PDF' }[type] }</span>
 }
 
-type DetailLinkItem = {
-  label: string
-  href: string
-  note: string
+function ExternalLink({ href, children }: { href: string; children: ReactNode }) {
+  return <a href={href} target="_blank" rel="noreferrer">{children} <span aria-hidden="true">↗</span></a>
 }
 
-type SiteContent = {
-  name: string
-  role: string
-  title: string
-  location: string
-  intro: string
-  currentProjectMission: string
-  availability: string
-  focusAreas: string[]
-  highlights: Highlight[]
-  primaryLinks: LinkItem[]
-  featuredProjects: ProjectItem[]
-  writingAndTalks: DetailLinkItem[]
+function Heading({ children, level = 2 }: { children: ReactNode; level?: 1 | 2 }) {
+  const Tag = level === 1 ? 'h1' : 'h2'
+  return <Tag className="markdown-heading"><span aria-hidden="true">{level === 1 ? '#' : '##'}</span>{children}</Tag>
 }
 
-const loadSiteContent = async (): Promise<SiteContent> => {
-  await new Promise((resolve) => setTimeout(resolve, 120))
+function Readme() {
+  return (
+    <>
+      <div className="intro">
+        <div className="intro-copy">
+          <p className="role">Senior Data Engineer <span aria-hidden="true">/</span> Columbus, OH</p>
+          <Heading level={1}>Miguel Johnson</Heading>
+          <p className="lead">I build data platforms that turn messy signals into reliable analytics.</p>
+          <p>I’m a Senior Data Engineer at Wisp. I work across the data stack, from infrastructure and orchestration to dbt models and the analytics they power. I also teach, mentor open-source contributors, and explore machine learning and electronics.</p>
+          <div className="actions">
+            <a className="primary-action" href="#experience">View experience <span aria-hidden="true">→</span></a>
+            <a className="secondary-action" href={resume}>Résumé <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <figure className="profile">
+          <img src="/miguel-johnson-profile.jpg" alt="Miguel Johnson" width="543" height="777" fetchPriority="high" />
+          <figcaption><span aria-hidden="true">▧</span> miguel-johnson-profile.jpg</figcaption>
+        </figure>
+      </div>
+      <dl className="metrics">
+        <div><dt>Event processing time at Wisp</dt><dd>−75%</dd></div>
+        <div><dt>Snowflake compute cost at Wisp</dt><dd>−15%</dd></div>
+        <div><dt>Livestream events per day at eFuse</dt><dd>Millions</dd></div>
+      </dl>
+      <section className="document-section">
+        <Heading>What I’m working on</Heading>
+        <div className="readme-links">
+          <a href={printerProject.href}><FileIcon type="lab" /><span><strong>{printerProject.title}</strong><small>CAD, 3D printing, and a bench test.</small></span><span aria-hidden="true">→</span></a>
+          <a href="#electronics"><FileIcon type="lab" /><span><strong>Electronics</strong><small>Learning circuits and firmware with Raspberry Pi and ESP32.</small></span><span aria-hidden="true">→</span></a>
+        </div>
+      </section>
+    </>
+  )
+}
 
-  return {
-    name: 'Miguel Johnson',
-    role: 'Data Engineer',
-    title: 'Building data platforms, teaching others how to build, and exploring machine learning and AI.',
-    location: '',
-    intro:
-      'I’m currently building real-time data platforms that ingest high-volume live signals, support brand and campaign measurement, and help teams make better decisions from messy data.',
-    currentProjectMission:
-      'A mutual-aid resource that helps neighbors share resources, provide support, and organize more easily.',
-    availability:
-      'Open to software engineering opportunities, product-minded teams, and high-trust environments where I can build, iterate, and grow fast.',
-    focusAreas: [
-      'Building sentiment analysis platforms',
-      'Mutual Aid and Community Support Tooling',
-      'Data Pipeline efficiency reliability',
-      'Teaching and mentoring newcomers to the field',
-      'Machine Learning and AI Research'
-    ],
-    highlights: [
-      { label: 'Focus', value: 'Real-time data platforms' },
-      { label: 'Current energy', value: 'Shipping and learning in public' },
-      { label: 'Style', value: 'High-throughput, cost-aware systems' },
-    ],
-    primaryLinks: [
-      {
-        label: 'LinkedIn',
-        href: 'https://www.linkedin.com/in/miguelbjohnson/',
-      },
-      {
-        label: 'GitHub',
-        href: 'https://github.com/guel-codes',
-      },
-      {
-        label: 'Medium',
-        href: 'https://miguel-codes.medium.com/',
-      },
-      {
-        label: 'Bluesky',
-        href: 'https://bsky.app/profile/miguel-codes.bsky.social',
-      },
-    ],
-    featuredProjects: [
-      {
-        title: 'Locust for PostgreSQL Stress Testing',
-        summary:
-        'A deeper look at load testing workflows using Python Locust, framed around realistic backend pressure, measurement, and system confidence.',
-        tags: ['Python', 'Locust', 'Load Testing'],
-        href: 'https://miguel-codes.medium.com/unconventional-load-testing-leveraging-python-locust-for-postgresql-stress-testing-d6e07d63714b',
-      },
-      {
-        title: 'Database Indexing',
-        summary:
-          'How we increased our overall database performance by 30% by adding indexes to the right columns.',
-        tags: ['Databases', 'Performance', 'Engineering'],
-        href: 'https://miguel-codes.medium.com/database-indexing-how-we-increased-our-overall-database-performance-bb96bc160545',
-      },
-      {
-        title: 'Deploying a Discord Bot on AWS EC2',
-        summary:
-          'An applied infrastructure project that shows how I approach deployment, cloud setup, and getting a working tool into a stable environment.',
-        tags: ['AWS', 'Automation', 'Deployment'],
-        href: 'https://miguel-codes.medium.com/deploying-a-discord-bot-using-aws-ec2-450d85f8e0af',
-      },
-    ],
-    writingAndTalks: [
-      {
-        label: 'Distribute Aid',
-        href: 'https://distributeaid.org/',
-        note: '',
-      },
-      {
-        label: 'Djangonaut Space Session 6',
-        href: 'https://djangonaut.space/comms/2026/02/19/session-6-team-introductions/',
-        note: '',
-      },
-      {
-        label: 'django-taggit',
-        href: 'https://github.com/jazzband/django-taggit',
-        note: '',
-      },
-      {
-        label: 'locust.io',
-        href: 'https://github.com/locustio/locust',
-        note: '',
-      },
-      {
-        label: 'PyOhio 2024 Talk',
-        href: 'https://www.pyohio.org/2024/program/talks/stress-less-easy-database-load-testing-using-python-and-locust/',
-        note: '',
-      },
-    ],
-  }
+function ResourceList({ items }: { items: typeof writing }) {
+  return (
+    <ul className="resource-list">
+      {items.map(({ title, detail, href, source }) => (
+        <li key={href}>
+          <h2><ExternalLink href={href}>{title}</ExternalLink></h2>
+          <p className="entry-meta">{source}</p>
+          <p>{detail}</p>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+const documents: Record<FileId, ReactNode> = {
+  readme: <Readme />,
+  experience: (
+    <>
+      <Heading level={1}>Experience</Heading>
+      <p className="lead">Five years and counting building and operating data platforms.</p>
+      <ol className="timeline">
+        {experience.map(({ company, role, dates, contributions }) => (
+          <li key={company}>
+            <p className="entry-meta">{dates}</p>
+            <h2>{company}</h2>
+            <p className="entry-role">{role}</p>
+            <ul>{contributions.map((item) => <li key={item}>{item}</li>)}</ul>
+          </li>
+        ))}
+      </ol>
+      <section className="document-section">
+        <Heading>Tools I work with</Heading>
+        <ul className="tags">
+          {['SQL', 'Python', 'TypeScript', 'dbt', 'Dagster', 'Airflow', 'Snowflake', 'MotherDuck', 'BigQuery', 'PostgreSQL', 'Terraform', 'Docker', 'AWS', 'GCP'].map((tool) => <li key={tool}>{tool}</li>)}
+        </ul>
+      </section>
+      <a className="secondary-action" href={resume}>View full résumé <span aria-hidden="true">↗</span></a>
+    </>
+  ),
+  projects: (
+    <>
+      <Heading level={1}>Projects</Heading>
+      <a className="project-preview" href={printerProject.href}>
+        <img src={printerProject.benchPhoto} alt="" width="900" height="1200" />
+        <div>
+          <h2>{printerProject.title}</h2>
+          <p>A custom printed housing and a bench-tested fan assembly.</p>
+          <span>Open project <span aria-hidden="true">→</span></span>
+        </div>
+      </a>
+    </>
+  ),
+  writing: (
+    <>
+      <Heading level={1}>Writing & talks</Heading>
+      <ResourceList items={writing} />
+    </>
+  ),
+  'open-source': (
+    <>
+      <Heading level={1}>Open source & community</Heading>
+      <ResourceList items={openSource} />
+    </>
+  ),
+  electronics: (
+    <>
+      <Heading level={1}>Electronics</Heading>
+      <p className="lead">I’m learning how to build circuits and write the firmware that runs on them.</p>
+      <dl className="learning-list">
+        <div><dt>Raspberry Pi</dt><dd>Getting comfortable with single-board computers and how they connect to external components.</dd></div>
+        <div><dt>ESP32 & firmware</dt><dd>Learning how to program microcontrollers and interact with hardware through code.</dd></div>
+        <div><dt>Circuits</dt><dd>Learning circuit fundamentals by building and troubleshooting on a breadboard.</dd></div>
+      </dl>
+      <section className="document-section">
+        <Heading>From the workbench</Heading>
+        <a className="project-preview" href={printerProject.href}>
+          <img src={printerProject.benchPhoto} alt={printerProject.benchAlt} width="900" height="1200" loading="lazy" />
+          <div>
+            <h3>{printerProject.title}</h3>
+            <p>I tried my hand at CAD, printed a housing, and wired up a fan to see it run.</p>
+            <span>See photos and videos <span aria-hidden="true">→</span></span>
+          </div>
+        </a>
+      </section>
+    </>
+  ),
+  'printer-exhaust': (
+    <>
+      <Heading level={1}>{printerProject.title}</Heading>
+      <PrinterProject />
+    </>
+  ),
 }
 
 function App() {
-  const { data } = useQuery({
-    queryKey: ['site-content'],
-    queryFn: loadSiteContent,
-    staleTime: Infinity,
-  })
+  const [{ activeFile, openFiles }, setWorkspace] = useState<{
+    activeFile: FileId | null
+    openFiles: FileId[]
+  }>(() => ({ activeFile: readHash(), openFiles: allFileIds }))
+  const [explorerOpen, setExplorerOpen] = useState(false)
+  const editorRef = useRef<HTMLElement>(null)
+  const activeTabRef = useRef<HTMLDivElement>(null)
+  const file = files.find(({ id }) => id === activeFile)
 
-  if (!data) {
-    return (
-      <main className="shell shell-loading">
-        <div className="loading-card">
-          <span className="eyebrow">Miguel Johnson</span>
-          <p>Loading portfolio…</p>
-        </div>
-      </main>
-    )
+  useEffect(() => {
+    function navigate() {
+      if (editorRef.current?.contains(document.activeElement)) {
+        editorRef.current.focus({ preventScroll: true })
+      }
+      const nextFile = readHash()
+      setWorkspace((workspace) => ({
+        activeFile: nextFile,
+        openFiles: workspace.openFiles.includes(nextFile)
+          ? workspace.openFiles
+          : [...workspace.openFiles, nextFile],
+      }))
+    }
+
+    window.addEventListener('hashchange', navigate)
+    return () => window.removeEventListener('hashchange', navigate)
+  }, [])
+
+  useEffect(() => {
+    editorRef.current?.scrollTo({ top: 0 })
+    activeTabRef.current?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+  }, [activeFile])
+
+  function closeTab(id: FileId, tab: HTMLElement | null) {
+    const index = openFiles.indexOf(id)
+    const neighbor = openFiles[index + 1] ?? openFiles[index - 1] ?? null
+    const nextFile = activeFile === id ? neighbor : activeFile
+
+    if (activeFile === id) {
+      const url = new URL(window.location.href)
+      url.hash = nextFile ?? ''
+      window.history.replaceState(window.history.state, '', url)
+    }
+
+    const neighborTab = openFiles[index + 1] ? tab?.nextElementSibling : tab?.previousElementSibling
+    const neighborLink = neighborTab?.querySelector('a')
+    if (neighborLink) {
+      neighborLink.focus()
+    } else {
+      editorRef.current?.focus()
+    }
+
+    setWorkspace({ activeFile: nextFile, openFiles: openFiles.filter((fileId) => fileId !== id) })
   }
 
   return (
-    <main className="shell">
-      <div className="ambient ambient-one" />
-      <div className="ambient ambient-two" />
+    <div className="workspace">
+      <a className="skip-link" href="#editor" onClick={(event) => {
+        event.preventDefault()
+        editorRef.current?.focus()
+      }}>Skip to content</a>
+      <header className="workspace-header">
+        <a className="brand" href="#readme"><span aria-hidden="true">&gt;_</span> miguel.codes</a>
+        <button className="explorer-toggle" type="button" aria-controls="explorer" aria-expanded={explorerOpen} onClick={() => setExplorerOpen(!explorerOpen)}>
+          <span aria-hidden="true">{explorerOpen ? '▾' : '▸'}</span> Explorer
+        </button>
+        <a className="header-resume" href={resume}>View résumé <span aria-hidden="true">↗</span></a>
+      </header>
 
-      <section className="hero-panel">
-        <header className="topbar">
-          <a className="brand" href="#top">
-            <img
-              className="brand-logo"
-              src="/miguel-codes-logo.png"
-              alt="miguel.codes"
-            />
-          </a>
-          <nav className="nav">
-            <a href="#work">Work</a>
-            <a href="#writing">Writing</a>
-            <a href="#about">About</a>
-          </nav>
-        </header>
-
-        <div className="hero-grid" id="top">
-          <div className="hero-copy">
-            <span className="eyebrow">{data.role}</span>
-            <h1>{data.title}</h1>
-            <p className="lede">{data.intro}</p>
-
-            <div className="cta-row">
-              <a className="button button-primary" href="/miguel-johnson-resume.pdf">
-                View Resume
-              </a>
-              <a className="button button-secondary" href="#work">
-                Explore Work
-              </a>
-            </div>
-
-            <ul className="highlight-grid" aria-label="Highlights">
-              {data.highlights.map((item) => (
-                <li key={item.label}>
-                  <span>{item.label}</span>
-                  <strong>{item.value}</strong>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="hero-visual">
-            <div className="portrait-frame">
-              <img
-                src="/miguel-johnson-profile.jpg"
-                alt="Miguel Johnson"
-                className="portrait"
-              />
-            </div>
-
-            <div className="status-card">
-              <span className="eyebrow">Current focus</span>
-              <p>{data.availability}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="content-grid">
-        <article className="panel panel-intro">
-          <span className="eyebrow">Currently Building 🏗️</span>
-          <h2>Lichen.fyi</h2>
-          <p>{data.currentProjectMission}</p>
-          <p className="meta-line">{data.location}</p>
-          <a
-            className="build-card"
-            href="https://lichen.fyi"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <span className="build-label">Live project</span>
-            <strong>lichen.fyi</strong>
-            <p>
-              A mutual-aid community resource board and map for sharing offers,
-              requests, and local support.
-            </p>
-          </a>
-        </article>
-
-        <article className="panel panel-links">
-          <span className="eyebrow">Connect</span>
-          <div className="link-list">
-            {data.primaryLinks.map((link) => (
-              <a
-                key={link.label}
-                className="link-card"
-                href={link.href}
-                target={link.href.startsWith('http') ? '_blank' : undefined}
-                rel={link.href.startsWith('http') ? 'noreferrer' : undefined}
-              >
-                <strong>{link.label}</strong>
-              </a>
-            ))}
-          </div>
-        </article>
-      </section>
-
-      <section className="section" id="work">
-        <div className="section-heading">
-          <span className="eyebrow">Selected Work</span>
-          <h2>Technical Writing ✍🏽</h2>
-        </div>
-
-        <div className="project-grid">
-          {data.featuredProjects.map((project) => (
-            <a
-              key={project.title}
-              className="project-card"
-              href={project.href}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <div className="project-topline">
-                <span className="eyebrow">Featured</span>
-              </div>
-              <h3>{project.title}</h3>
-              <p>{project.summary}</p>
-              <ul className="tag-row">
-                {project.tags.map((tag) => (
-                  <li key={tag}>{tag}</li>
-                ))}
-              </ul>
-            </a>
+      <aside id="explorer" className={`explorer${explorerOpen ? ' is-open' : ''}`}>
+        <p className="explorer-label">Explorer</p>
+        <p className="folder-label"><span aria-hidden="true">▾</span> miguel.codes</p>
+        <nav className="file-tree" aria-label="Explorer files">
+          {files.map(({ id, name, type }) => (
+            <a key={id} href={`#${id}`} aria-current={activeFile === id ? 'page' : undefined} onClick={() => {
+              if (explorerOpen) {
+                setExplorerOpen(false)
+                editorRef.current?.focus()
+              }
+            }}><FileIcon type={type} />{name}</a>
           ))}
+          <a href={resume}><FileIcon type="pdf" />resume.pdf <span className="outbound" aria-hidden="true">↗</span></a>
+        </nav>
+        <nav className="socials" aria-label="Social profiles">
+          <p className="explorer-label">Elsewhere</p>
+          {socialLinks.map(({ label, href }) => <ExternalLink key={label} href={href}>{label}</ExternalLink>)}
+        </nav>
+      </aside>
+
+      <div className="editor">
+        <nav className="tab-strip" aria-label="Editor tabs">
+          {openFiles.map((id) => {
+            const { name, type } = files.find((item) => item.id === id)!
+            const isActive = activeFile === id
+            return (
+              <div key={id} ref={isActive ? activeTabRef : undefined} className={`editor-tab${isActive ? ' is-active' : ''}`}>
+                <a href={`#${id}`} aria-current={isActive ? 'page' : undefined}><FileIcon type={type} />{name}</a>
+                <button type="button" aria-label={`Close ${name}`} onClick={(event) => closeTab(id, event.currentTarget.parentElement)}>×</button>
+              </div>
+            )
+          })}
+        </nav>
+        <div className="breadcrumb">
+          <span>miguel.codes</span>
+          {file && <><span aria-hidden="true">›</span><FileIcon type={file.type} /><span>{file.name}</span></>}
         </div>
-      </section>
+        <main className="editor-scroll" id="editor" tabIndex={-1} ref={editorRef}>
+          {activeFile ? (
+            <article className="document" key={activeFile}>{documents[activeFile]}</article>
+          ) : (
+            <div className="document">
+              <Heading level={1}>No files open</Heading>
+              <p className="lead">Choose a file from the explorer to get back to the portfolio.</p>
+              <a className="secondary-action" href="#readme">Open README.md <span aria-hidden="true">→</span></a>
+            </div>
+          )}
+        </main>
+      </div>
 
-      <section className="section split-section" id="writing">
-        <article className="panel">
-          <span className="eyebrow">Open Source + Community</span>
-          <h2>Open source projects and community contributions.</h2>
-          <div className="stack-list">
-            {data.writingAndTalks.map((item) => (
-              <a
-                key={item.label}
-                className="stack-link"
-                href={item.href}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <strong>{item.label}</strong>
-                <span>{item.note}</span>
-              </a>
-            ))}
-          </div>
-        </article>
-
-        <article className="panel" id="about">
-          <span className="eyebrow">About</span>
-          <h2>What I’m leaning into right now.</h2>
-          <ul className="focus-list">
-            {data.focusAreas.map((area) => (
-              <li key={area}>{area}</li>
-            ))}
-          </ul>
-          <p className="about-note">
-            {/* This first version is intentionally focused: clear story, real links,
-            and enough signal for a recruiter or hiring manager to quickly
-            understand what I’m about. */}
-          </p>
-        </article>
-      </section>
-    </main>
+      <footer className="status-bar">
+        <span><span className="status-dot" aria-hidden="true" /> Columbus, OH</span>
+        <a className="footer-contact" href="mailto:miguelbjohnson@gmail.com">Email <span aria-hidden="true">↗</span></a>
+        {file && <span className="status-file"><FileIcon type={file.type} /> {file.name}</span>}
+      </footer>
+    </div>
   )
 }
 
