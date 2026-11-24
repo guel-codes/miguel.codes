@@ -10,8 +10,29 @@ const clips = [
 export default function PrinterProject() {
   return (
     <>
-      <p className="lead">A hands-on build that brought CAD, 3D printing, and a little hardware tinkering together.</p>
-      <p>I modeled and printed a housing for a 3D printer exhaust fan, then wired up the fan and tested the assembly on the bench.</p>
+      <p className="lead">An inline fan and a custom 3D-printed coupling for my Bambu Lab P1S exhaust.</p>
+      <section className="document-section">
+        <h2 className="markdown-heading"><span aria-hidden="true">##</span>Problem</h2>
+        <p>The P1S’s built-in fan didn’t move enough air through the duct to vent the printer fumes outside.</p>
+      </section>
+      <section className="document-section">
+        <h2 className="markdown-heading"><span aria-hidden="true">##</span>Solution</h2>
+        <p>I 3D-printed a new duct coupling and designed a bracket in Tinkercad to hold a second fan inside it. After testing the assembly on the bench, I installed it in the exhaust line to boost airflow toward the outside vent.</p>
+      </section>
+      <section className="document-section">
+        <h2 className="markdown-heading"><span aria-hidden="true">##</span>Finished installation</h2>
+        <div className="project-gallery project-installation">
+          <figure>
+            <img
+              src={`${mediaRoot}/installed-vent.webp`}
+              alt="Exhaust coupling joined to the flexible duct beside the window, with the fan controller’s blue LEDs lit"
+              width="1080"
+              height="1440"
+            />
+            <figcaption>The inline fan coupling installed between the printer exhaust and the window duct.</figcaption>
+          </figure>
+        </div>
+      </section>
       <section className="document-section">
         <h2 className="markdown-heading"><span aria-hidden="true">##</span>Build photos</h2>
         <div className="project-gallery">

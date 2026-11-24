@@ -56,7 +56,14 @@ function Readme() {
         <div><dt>Livestream events per day at eFuse</dt><dd>Millions</dd></div>
       </dl>
       <section className="document-section">
-        <Heading>What I’m working on</Heading>
+        <Heading>What I do</Heading>
+        <div className="readme-links">
+          <a href="#experience"><FileIcon type="md" /><span><strong>Data engineering</strong><small>I build event pipelines, model data in dbt, and tune the infrastructure that keeps both running.</small></span><span aria-hidden="true">→</span></a>
+          <a href="#open-source"><FileIcon type="md" /><span><strong>Open source and mentoring</strong><small>I’ve contributed to Locust and django-taggit and coached contributors through Djangonaut Space and Distribute Aid.</small></span><span aria-hidden="true">→</span></a>
+        </div>
+      </section>
+      <section className="document-section">
+        <Heading>Currently working on</Heading>
         <div className="readme-links">
           <a href={printerProject.href}><FileIcon type="lab" /><span><strong>{printerProject.title}</strong><small>CAD, 3D printing, and a bench test.</small></span><span aria-hidden="true">→</span></a>
           <a href="#electronics"><FileIcon type="lab" /><span><strong>Electronics</strong><small>Learning circuits and firmware with Raspberry Pi and ESP32.</small></span><span aria-hidden="true">→</span></a>

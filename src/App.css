@@ -240,6 +240,7 @@ h2.markdown-heading { font-size: clamp(1.4rem, 2.3vw, 1.9rem); margin-bottom: 14
 .project-gallery figure { overflow: hidden; border: 1px solid var(--line); border-radius: 5px; background: var(--panel); }
 .project-gallery img, .project-gallery video { display: block; width: 100%; height: auto; }
 .project-gallery figcaption { padding: 10px 12px; color: var(--muted); font: .75rem/1.4 var(--mono); }
+.project-installation { grid-template-columns: minmax(0, 1fr); max-width: 384px; }
 .project-clips { max-width: 590px; }
 .timeline, .resource-list { list-style: none; padding: 0; margin: 24px 0; }
 .timeline > li, .resource-list > li, .learning-list > div { padding: 16px 0; border-top: 1px solid var(--line); }
