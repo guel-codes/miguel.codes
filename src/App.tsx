@@ -142,7 +142,7 @@ const documents: Record<FileId, ReactNode> = {
       <Heading level={1}>Electronics</Heading>
       <p className="lead">I’m learning how to build circuits and write the firmware that runs on them.</p>
       <dl className="learning-list">
-        <div><dt>Raspberry Pi</dt><dd>Getting comfortable with single-board computers and how they connect to external components.</dd></div>
+        <div><dt>Raspberry Pi & Arduino</dt><dd>Getting comfortable with single-board computers and how they connect to external components.</dd></div>
         <div><dt>ESP32 & firmware</dt><dd>Learning how to program microcontrollers and interact with hardware through code.</dd></div>
         <div><dt>Circuits</dt><dd>Learning circuit fundamentals by building and troubleshooting on a breadboard.</dd></div>
       </dl>
