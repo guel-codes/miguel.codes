@@ -30,13 +30,13 @@ class Engineer {
 const miguel = new Engineer({
   name: 'Miguel Johnson',
   specialty: 'Data engineering',
-  skills: ['SQL', 'dbt', 'Python', 'CAD', '3D printing', 'TypeScript'],
+  skills: ['SQL', 'dbt', 'Python', 'CAD', 'engineering', 'TypeScript'],
 })
 
 const projects: Project[] = [
   { title: 'ESP32 sensor logger', skills: ['Python', 'ESP32', 'MQTT'] },
-  { title: '3D printer exhaust refactor', skills: ['CAD', '3D printing'] },
-  { title: 'Live event analytics', skills: ['SQL', 'dbt', 'TypeScript'] },
+  { title: '3D printer exhaust refactor', skills: ['CAD', 'engineering'] },
+  { title: 'Data pipeline creation', skills: ['SQL', 'dbt', 'Python'] },
 ]
 
 console.log(\`Project matches for \${miguel.label}\`)
