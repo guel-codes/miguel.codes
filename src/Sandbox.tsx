@@ -36,7 +36,7 @@ const miguel = new Engineer({
 const projects: Project[] = [
   { title: 'ESP32 sensor logger', skills: ['Python', 'ESP32', 'MQTT'] },
   { title: '3D printer exhaust refactor', skills: ['CAD', 'engineering'] },
-  { title: 'Data pipeline creation', skills: ['SQL', 'dbt', 'Python'] },
+  { title: 'Data pipeline architecture and creation', skills: ['SQL', 'dbt', 'Python'] },
 ]
 
 console.log(\`Project matches for \${miguel.label}\`)
